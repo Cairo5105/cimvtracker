@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIMV — Etapa 04 · Transição Monolíngue</title>
+<style>
+  :root{
+    --cyan:#06b6d4;
+    --cyan-dark:#0891b2;
+    --cyan-light:#cffafe;
+    --cyan-pale:#ecfeff;
+    --white:#ffffff;
+    --gray:#64748b;
+    --gray-dark:#1e293b;
+    --border:#e2e8f0;
+    --shadow: 0 4px 20px rgba(6,182,212,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(180deg, var(--cyan-pale) 0%, #ffffff 220px);
+    color: var(--gray-dark);
+    padding: 24px 16px 60px;
+    min-height: 100vh;
+  }
+  .container{max-width: 760px; margin: 0 auto;}
+
+  header{
+    text-align:center;
+    margin-bottom: 22px;
+  }
+  header .eyebrow{
+    color: var(--cyan-dark);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  header h1{
+    margin: 6px 0 4px;
+    font-size: 26px;
+    color: var(--gray-dark);
+  }
+  header p{
+    margin:0;
+    color: var(--gray);
+    font-size: 14px;
+  }
+
+  .overall-card{
+    background: var(--white);
+    border: 3px solid var(--white);
+    box-shadow: 0 2px 10px rgba(15,23,42,0.05), 0 0 0 1px var(--border);
+    border-radius: 18px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .overall-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom: 10px;
+  }
+  .overall-top h2{
+    margin:0;
+    font-size:14px;
+    color: var(--gray);
+    font-weight:700;
+  }
+  .overall-pct{
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--cyan-dark);
+  }
+  .bar-outer{
+    background: var(--cyan-pale);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+    border: 1px solid var(--cyan-light);
+  }
+  .bar-inner{
+    height:100%;
+    background: linear-gradient(90deg, var(--cyan), var(--cyan-dark));
+    border-radius: 999px;
+    transition: width .4s ease;
+    width:0%;
+  }
+  .status-msg{
+    text-align:center;
+    font-size:11px;
+    color: var(--cyan-dark);
+    height: 14px;
+    margin-top: 6px;
+    opacity:0;
+    transition: opacity .3s ease;
+  }
+  .status-msg.show{ opacity:1; }
+
+  /* HERO: MAR */
+  .hero-card{
+    background: linear-gradient(150deg, var(--cyan-dark), var(--cyan) 70%);
+    border: 3px solid var(--white);
+    border-radius: 22px;
+    padding: 26px 24px;
+    box-shadow: 0 10px 30px rgba(6,182,212,0.3);
+    margin-bottom: 18px;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card::after{
+    content:"";
+    position:absolute;
+    width:220px; height:220px;
+    background: rgba(255,255,255,0.08);
+    border-radius:50%;
+    top:-90px; right:-70px;
+  }
+  .hero-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom: 6px;
+  }
+  .hero-top h2{
+    margin:0;
+    font-size:17px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .hero-tag{
+    font-size:11px;
+    font-weight:700;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: .5px;
+  }
+  .hero-numbers{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin: 10px 0 14px;
+  }
+  .hero-numbers .big{
+    font-size: 44px;
+    font-weight: 800;
+    line-height:1;
+  }
+  .hero-numbers .small{
+    font-size: 16px;
+    opacity: .85;
+    font-weight:600;
+  }
+  .hero-bar-outer{
+    background: rgba(255,255,255,0.25);
+    border-radius: 999px;
+    height: 14px;
+    overflow: hidden;
+    position:relative;
+    z-index:1;
+  }
+  .hero-bar-inner{
+    height:100%;
+    background: var(--white);
+    border-radius:999px;
+    transition: width .4s ease;
+    width:0%;
+  }
+  .hero-controls{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    position:relative;
+    z-index:1;
+  }
+  .hero-controls input[type=number]{
+    width: 90px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    text-align:center;
+    font-weight:700;
+  }
+  .hero-controls input:focus{ outline: 2px solid rgba(255,255,255,0.6); }
+  .hero-btn-add{
+    background: var(--white);
+    color: var(--cyan-dark);
+    border:none;
+    font-weight:800;
+    border-radius:10px;
+    padding: 10px 16px;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .hero-quick{
+    display:flex;
+    gap:6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    position:relative;
+    z-index:1;
+  }
+  .hq-btn{
+    background: rgba(255,255,255,0.18);
+    color: var(--white);
+    border:none;
+    font-weight:700;
+    border-radius:10px;
+    padding: 7px 13px;
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  .hq-btn:hover{ background: rgba(255,255,255,0.3); }
+  .hq-reset{
+    background: transparent;
+    color: rgba(255,255,255,0.75);
+    text-decoration: underline;
+    font-size:11.5px;
+    padding: 7px 4px;
+  }
+
+  .card{
+    background: var(--white);
+    border: 3px solid var(--white);
+    box-shadow: 0 2px 10px rgba(15,23,42,0.04), 0 0 0 1px var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .card-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .card-head h3{
+    margin:0;
+    font-size:14.5px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .icon{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:26px;height:26px;
+    border-radius:8px;
+    background: var(--cyan-pale);
+    color: var(--cyan-dark);
+    font-size:13px;
+    flex-shrink:0;
+  }
+  .card-sub{
+    font-size:12px;
+    color:var(--gray);
+    font-weight:700;
+  }
+  .mini-bar-outer{
+    background: var(--cyan-pale);
+    border-radius: 999px;
+    height: 7px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .mini-bar-inner{
+    height:100%;
+    background: linear-gradient(90deg, var(--cyan), var(--cyan-dark));
+    border-radius:999px;
+    transition: width .4s ease;
+    width:0%;
+  }
+
+  /* Aulas - compacto */
+  .lessons-grid{
+    display:grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+  }
+  @media (max-width:520px){
+    .lessons-grid{grid-template-columns: repeat(8, 1fr);}
+  }
+  .lesson-box{
+    aspect-ratio: 1;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10px;
+    font-weight:700;
+    color: var(--gray);
+    cursor:pointer;
+    user-select:none;
+    transition: all .15s ease;
+    background: var(--white);
+  }
+  .lesson-box:hover{ border-color: var(--cyan); }
+  .lesson-box.done{
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+    border-color: var(--cyan-dark);
+    color: var(--white);
+  }
+
+  /* Frases */
+  .stat-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .stat-numbers{
+    font-size:13px;
+    color:var(--gray);
+  }
+  .stat-numbers b{
+    color: var(--cyan-dark);
+    font-size:18px;
+  }
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  input[type=number]{
+    width: 72px;
+    padding: 7px 9px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    text-align:center;
+  }
+  input[type=number]:focus{ outline:none; border-color: var(--cyan); }
+  button{
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    border-radius: 9px;
+    padding: 7px 12px;
+    font-size: 13px;
+    transition: transform .1s ease, opacity .15s ease;
+  }
+  button:active{ transform: scale(0.96); }
+  .btn-add{
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+    color: var(--white);
+  }
+  .btn-reset{
+    background: var(--cyan-pale);
+    color: var(--cyan-dark);
+    font-size:11px;
+    padding: 5px 9px;
+  }
+  .quick-buttons{
+    display:flex;
+    gap:6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .quick-btn{
+    background: var(--cyan-pale);
+    color: var(--cyan-dark);
+    font-size: 11.5px;
+    padding: 5px 10px;
+  }
+  .quick-btn:hover{ background: var(--cyan-light); }
+
+  /* Anki */
+  .anki-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .anki-stats{
+    display:flex;
+    gap: 18px;
+  }
+  .anki-stat{
+    text-align:center;
+  }
+  .anki-stat .num{
+    font-size:20px;
+    font-weight:800;
+    color: var(--cyan-dark);
+    line-height:1;
+  }
+  .anki-stat .lbl{
+    font-size:10.5px;
+    color: var(--gray);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+  }
+  .today-btn{
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+    color:var(--white);
+    padding: 8px 14px;
+    border-radius:10px;
+    font-size:13px;
+  }
+  .today-btn.done{
+    background: var(--gray-dark);
+  }
+  .month-label{
+    font-size:12px;
+    color: var(--gray);
+    font-weight:700;
+    text-transform: capitalize;
+    min-width: 130px;
+    text-align:center;
+  }
+  .month-nav{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 14px;
+    margin: 12px 0 8px;
+  }
+  .month-arrow{
+    background: var(--cyan-pale);
+    color: var(--cyan-dark);
+    border:none;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    line-height:1;
+  }
+  .month-arrow:hover{ background: var(--cyan-light); }
+  .month-arrow:disabled{
+    opacity:.35;
+    cursor: default;
+    pointer-events:none;
+  }
+
+  .heatmap-section{
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .heatmap-title{
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray);
+    margin-bottom: 8px;
+    text-transform: capitalize;
+  }
+  .heatmap-wrap{
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .heatmap-months{
+    display:grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 11px;
+    gap: 3px;
+    font-size: 9px;
+    color: var(--gray);
+    margin-bottom: 4px;
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+  .heatmap-grid{
+    display:grid;
+    grid-template-rows: repeat(7, 11px);
+    grid-auto-flow: column;
+    grid-auto-columns: 11px;
+    gap: 3px;
+    width: fit-content;
+  }
+  .heatmap-cell{
+    width: 11px;
+    height: 11px;
+    border-radius: 2.5px;
+    background: var(--cyan-pale);
+    border: 1px solid var(--border);
+    cursor:pointer;
+  }
+  .heatmap-cell:hover{ border-color: var(--cyan); }
+  .heatmap-cell.done{
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+    border-color: var(--cyan-dark);
+  }
+  .heatmap-cell.empty{
+    background: transparent;
+    border: none;
+    cursor: default;
+  }
+  .heatmap-cell.future{
+    opacity: .35;
+    cursor: default;
+    pointer-events: none;
+  }
+  .anki-grid{
+    display:grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+  }
+  @media (max-width:520px){
+    .anki-grid{grid-template-columns: repeat(8, 1fr);}
+  }
+  .anki-day{
+    aspect-ratio:1;
+    border-radius:6px;
+    border: 1.5px solid var(--border);
+    font-size:10px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--gray);
+    cursor:pointer;
+    user-select:none;
+    background: var(--white);
+    transition: all .15s ease;
+  }
+  .anki-day:hover{ border-color: var(--cyan); }
+  .anki-day.today{ border-color: var(--cyan-dark); border-width:2px; }
+  .anki-day.done{
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+    border-color: var(--cyan-dark);
+    color: var(--white);
+  }
+  .anki-day.future{
+    opacity: .35;
+    cursor: default;
+    pointer-events:none;
+  }
+
+  footer{
+    text-align:center;
+    color: var(--gray);
+    font-size:12px;
+    margin-top: 22px;
+  }
+
+  /* Botão de modo escuro */
+  .theme-toggle{
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    min-width: 52px;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+    color: var(--white);
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(6,182,212,0.45);
+    z-index: 999;
+    transition: transform .15s ease;
+  }
+  .theme-toggle:active{ transform: scale(0.9); }
+  .theme-toggle:hover{ transform: scale(1.06); }
+
+  /* ===== MODO ESCURO ===== */
+  [data-theme="dark"] body{
+    background: linear-gradient(180deg, #0b1220 0%, #0f172a 220px);
+    color: #e2e8f0;
+  }
+  [data-theme="dark"] header h1{ color: #f1f5f9; }
+  [data-theme="dark"] header p{ color: #94a3b8; }
+  [data-theme="dark"] .overall-card,
+  [data-theme="dark"] .card{
+    background: #1e293b;
+    border-color: #1e293b;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35), 0 0 0 1px #334155;
+  }
+  [data-theme="dark"] .overall-top h2{ color: #94a3b8; }
+  [data-theme="dark"] .card-head h3{ color: #f1f5f9; }
+  [data-theme="dark"] .card-sub,
+  [data-theme="dark"] .stat-numbers,
+  [data-theme="dark"] .month-label,
+  [data-theme="dark"] .heatmap-title,
+  [data-theme="dark"] .heatmap-months,
+  [data-theme="dark"] .anki-stat .lbl{
+    color: #94a3b8;
+  }
+  [data-theme="dark"] .icon{
+    background: rgba(6,182,212,0.15);
+    color: #22d3ee;
+  }
+  [data-theme="dark"] .bar-outer,
+  [data-theme="dark"] .mini-bar-outer{
+    background: rgba(6,182,212,0.12);
+    border-color: rgba(6,182,212,0.25);
+  }
+  [data-theme="dark"] .lesson-box,
+  [data-theme="dark"] .anki-day,
+  [data-theme="dark"] .heatmap-cell{
+    background: #0f172a;
+    border-color: #334155;
+    color: #94a3b8;
+  }
+  [data-theme="dark"] .lesson-box.done,
+  [data-theme="dark"] .anki-day.done,
+  [data-theme="dark"] .heatmap-cell.done{
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+    border-color: var(--cyan-dark);
+    color: var(--white);
+  }
+  [data-theme="dark"] input[type=number]{
+    background: #0f172a;
+    border-color: #334155;
+    color: #e2e8f0;
+  }
+  [data-theme="dark"] .btn-reset,
+  [data-theme="dark"] .quick-btn,
+  [data-theme="dark"] .month-arrow{
+    background: rgba(6,182,212,0.15);
+    color: #22d3ee;
+  }
+  [data-theme="dark"] .quick-btn:hover,
+  [data-theme="dark"] .month-arrow:hover{
+    background: rgba(6,182,212,0.28);
+  }
+  [data-theme="dark"] .heatmap-section{ border-top-color: #334155; }
+  [data-theme="dark"] .today-btn.done{ background: #0f172a; }
+  [data-theme="dark"] footer{ color: #64748b; }
+  [data-theme="dark"] .hero-card{
+    background: linear-gradient(150deg, #155e75, #0e7490 70%);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+  }
+  [data-theme="dark"] .theme-toggle{
+    background: linear-gradient(135deg, #0e7490, #155e75);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="eyebrow">CIMV · Mairo Vergara</div>
+    <h1>Etapa 04 — Transição Monolíngue</h1>
+    <p>Acompanhamento das metas para concluir a etapa</p>
+  </header>
+
+  <div class="overall-card">
+    <div class="overall-top">
+      <h2>Progresso Geral da Etapa</h2>
+      <div class="overall-pct" id="overallPct">0%</div>
+    </div>
+    <div class="bar-outer"><div class="bar-inner" id="overallBar"></div></div>
+    <div class="status-msg" id="statusMsg">Salvo ✓</div>
+  </div>
+
+  <!-- MAR - HERO -->
+  <div class="hero-card">
+    <div class="hero-top">
+      <h2>🎧 Horas de MAR</h2>
+      <span class="hero-tag">FOCO PRINCIPAL</span>
+    </div>
+    <div class="hero-numbers">
+      <span class="big" id="marTotal">0</span>
+      <span class="small">/ 50 horas</span>
+    </div>
+    <div class="hero-bar-outer"><div class="hero-bar-inner" id="marBar"></div></div>
+    <div class="hero-controls">
+      <input type="number" id="marInput" placeholder="horas" min="0.1" step="0.1">
+      <button class="hero-btn-add" onclick="addMar()">Adicionar</button>
+    </div>
+    <div class="hero-quick">
+      <button class="hq-btn" onclick="quickAddMar(0.5)">+30min</button>
+      <button class="hq-btn" onclick="quickAddMar(1)">+1h</button>
+      <button class="hq-btn" onclick="quickAddMar(2)">+2h</button>
+      <button class="hq-reset" id="resetMarBtn" onclick="resetMar()">zerar</button>
+    </div>
+  </div>
+
+  <!-- AULAS (compacto) -->
+  <div class="card">
+    <div class="card-head">
+      <h3><span class="icon">▶</span>Aulas</h3>
+      <span class="card-sub" id="lessonsCount">0 / 30</span>
+    </div>
+    <div class="mini-bar-outer"><div class="mini-bar-inner" id="lessonsBar"></div></div>
+    <div class="lessons-grid" id="lessonsGrid"></div>
+  </div>
+
+  <!-- FRASES -->
+  <div class="card">
+    <div class="card-head">
+      <h3><span class="icon">✎</span>Frases Mineradas</h3>
+      <span class="card-sub" id="phrasesCount">0 / 500</span>
+    </div>
+    <div class="mini-bar-outer"><div class="mini-bar-inner" id="phrasesBar"></div></div>
+    <div class="stat-row">
+      <div class="stat-numbers"><b id="phrasesTotalTxt">0</b> frases</div>
+      <div class="controls">
+        <input type="number" id="phrasesInput" placeholder="qtd" min="1">
+        <button class="btn-add" onclick="addPhrases()">Adicionar</button>
+      </div>
+    </div>
+    <div class="quick-buttons">
+      <button class="quick-btn" onclick="quickAddPhrases(5)">+5</button>
+      <button class="quick-btn" onclick="quickAddPhrases(10)">+10</button>
+      <button class="quick-btn" onclick="quickAddPhrases(20)">+20</button>
+      <button class="btn-reset" id="resetPhrasesBtn" onclick="resetPhrases()">Zerar</button>
+    </div>
+  </div>
+
+  <!-- ANKI -->
+  <div class="card">
+    <div class="card-head">
+      <h3><span class="icon">🔔</span>Revisão do Anki</h3>
+    </div>
+    <div class="anki-top">
+      <div class="anki-stats">
+        <div class="anki-stat">
+          <div class="num" id="ankiStreak">0</div>
+          <div class="lbl">Sequência</div>
+        </div>
+        <div class="anki-stat">
+          <div class="num" id="ankiTotal">0</div>
+          <div class="lbl">Dias no mês</div>
+        </div>
+      </div>
+      <button class="today-btn" id="todayBtn" onclick="toggleToday()">Marcar hoje</button>
+    </div>
+    <div class="month-nav">
+      <button class="month-arrow" id="prevMonthBtn" onclick="changeMonth(-1)">‹</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button class="month-arrow" id="nextMonthBtn" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="anki-grid" id="ankiGrid"></div>
+
+    <div class="heatmap-section">
+      <div class="heatmap-title">Visão do ano <span id="heatmapYear"></span></div>
+      <div class="heatmap-wrap">
+        <div class="heatmap-months" id="heatmapMonths"></div>
+        <div class="heatmap-grid" id="heatmapGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Seu progresso é salvo automaticamente neste dispositivo.</footer>
+</div>
+
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Alternar modo escuro">dark</button>
+
+<script>
+const LESSON_TOTAL = 30;
+const PHRASE_GOAL = 500;
+const MAR_GOAL = 50;
+const KEY = 'cimv-etapa4-tracker';
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+let state = {
+  lessons: Array(LESSON_TOTAL).fill(false),
+  phrases: 0,
+  mar: 0,
+  ankiDates: []
+};
+
+function showStatus(){
+  const el = document.getElementById('statusMsg');
+  el.classList.add('show');
+  clearTimeout(showStatus._t);
+  showStatus._t = setTimeout(()=> el.classList.remove('show'), 1200);
+}
+
+async function loadState(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      state = Object.assign(state, parsed);
+      if(!Array.isArray(state.lessons) || state.lessons.length !== LESSON_TOTAL){
+        state.lessons = Array(LESSON_TOTAL).fill(false);
+      }
+      if(!Array.isArray(state.ankiDates)) state.ankiDates = [];
+    }
+  }catch(e){
+    // sem dados salvos ainda
+  }
+  buildLessonsGrid();
+  buildAnkiGrid();
+  render();
+}
+
+async function saveState(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(state));
+    showStatus();
+  }catch(e){
+    console.error('Erro ao salvar', e);
+  }
+}
+
+function buildLessonsGrid(){
+  const grid = document.getElementById('lessonsGrid');
+  grid.innerHTML = '';
+  for(let i=0; i<LESSON_TOTAL; i++){
+    const box = document.createElement('div');
+    box.className = 'lesson-box';
+    box.textContent = i+1;
+    box.onclick = () => toggleLesson(i);
+    grid.appendChild(box);
+  }
+}
+
+function toggleLesson(i){
+  state.lessons[i] = !state.lessons[i];
+  render();
+  saveState();
+}
+
+function addPhrases(){
+  const input = document.getElementById('phrasesInput');
+  const val = parseInt(input.value);
+  if(!isNaN(val) && val > 0){
+    state.phrases += val;
+    input.value = '';
+    render();
+    saveState();
+  }
+}
+function quickAddPhrases(n){
+  state.phrases += n;
+  render();
+  saveState();
+}
+function resetPhrases(){
+  confirmAction('resetPhrasesBtn', 'Zerar', () => {
+    state.phrases = 0;
+    render();
+    saveState();
+  });
+}
+
+function addMar(){
+  const input = document.getElementById('marInput');
+  const val = parseFloat(input.value);
+  if(!isNaN(val) && val > 0){
+    state.mar += val;
+    input.value = '';
+    render();
+    saveState();
+  }
+}
+function quickAddMar(n){
+  state.mar += n;
+  render();
+  saveState();
+}
+function resetMar(){
+  confirmAction('resetMarBtn', 'zerar', () => {
+    state.mar = 0;
+    render();
+    saveState();
+  });
+}
+
+/* Confirmação inline de 2 cliques (substitui window.confirm, que fica bloqueado no sandbox) */
+function confirmAction(btnId, originalLabel, onConfirm){
+  const btn = document.getElementById(btnId);
+  if(btn.dataset.armed === 'true'){
+    clearTimeout(btn._resetTimer);
+    btn.dataset.armed = 'false';
+    btn.textContent = originalLabel;
+    btn.style.opacity = '';
+    onConfirm();
+    return;
+  }
+  btn.dataset.armed = 'true';
+  btn.textContent = 'confirmar?';
+  btn.style.opacity = '1';
+  btn._resetTimer = setTimeout(()=>{
+    btn.dataset.armed = 'false';
+    btn.textContent = originalLabel;
+  }, 2500);
+}
+
+/* ---- ANKI ---- */
+const MONTH_NAMES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const MONTH_ABBR = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+const realNow = new Date();
+let viewYear = realNow.getFullYear();
+let viewMonth = realNow.getMonth();
+const MAX_DATE = new Date(2027, 11, 31);
+MAX_DATE.setHours(0,0,0,0);
+
+function changeMonth(delta){
+  let newMonth = viewMonth + delta;
+  let newYear = viewYear;
+  if(newMonth < 0){ newMonth = 11; newYear--; }
+  if(newMonth > 11){ newMonth = 0; newYear++; }
+  if(newYear > 2027 || (newYear === 2027 && newMonth > 11)) return;
+  viewYear = newYear;
+  viewMonth = newMonth;
+  buildAnkiGrid();
+  render();
+}
+
+function buildAnkiGrid(){
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+  const now = new Date();
+  now.setHours(0,0,0,0);
+
+  document.getElementById('monthLabel').textContent = `${MONTH_NAMES[viewMonth]} de ${viewYear}`;
+
+  const atMaxMonth = (viewYear === 2027 && viewMonth === 11);
+  document.getElementById('nextMonthBtn').disabled = atMaxMonth;
+
+  const grid = document.getElementById('ankiGrid');
+  grid.innerHTML = '';
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = `${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cellDate = new Date(viewYear, viewMonth, d);
+    const box = document.createElement('div');
+    box.className = 'anki-day';
+    box.textContent = d;
+    box.dataset.date = dateStr;
+    if(cellDate.getTime() === now.getTime()) box.classList.add('today');
+    if(cellDate > MAX_DATE){
+      box.classList.add('future');
+    } else {
+      box.onclick = () => toggleAnkiDate(dateStr);
+    }
+    grid.appendChild(box);
+  }
+  buildYearHeatmap();
+}
+
+function buildYearHeatmap(){
+  const year = realNow.getFullYear();
+  document.getElementById('heatmapYear').textContent = year;
+
+  const jan1 = new Date(year,0,1);
+  const firstDayOffset = jan1.getDay();
+  const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  const daysInYear = isLeap ? 366 : 365;
+
+  const grid = document.getElementById('heatmapGrid');
+  grid.innerHTML = '';
+  for(let i=0; i<firstDayOffset; i++){
+    const c = document.createElement('div');
+    c.className = 'heatmap-cell empty';
+    grid.appendChild(c);
+  }
+
+  const monthStarts = [];
+  for(let i=0; i<daysInYear; i++){
+    const d = new Date(year,0,1+i);
+    const dateStr = `${year}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if(d.getDate() === 1){
+      const colIndex = Math.floor((i+firstDayOffset)/7);
+      monthStarts.push({month: d.getMonth(), col: colIndex});
+    }
+    const cell = document.createElement('div');
+    cell.className = 'heatmap-cell';
+    cell.dataset.date = dateStr;
+    cell.title = dateStr;
+    if(d > MAX_DATE){
+      cell.classList.add('future');
+    } else {
+      if(state.ankiDates.includes(dateStr)) cell.classList.add('done');
+      cell.onclick = () => toggleAnkiDate(dateStr);
+    }
+    grid.appendChild(cell);
+  }
+
+  const totalCols = Math.ceil((daysInYear+firstDayOffset)/7);
+  const labelMap = {};
+  monthStarts.forEach(m => { labelMap[m.col] = MONTH_ABBR[m.month]; });
+  const monthsRow = document.getElementById('heatmapMonths');
+  monthsRow.innerHTML = '';
+  for(let c=0; c<totalCols; c++){
+    const lbl = document.createElement('div');
+    lbl.textContent = labelMap[c] || '';
+    monthsRow.appendChild(lbl);
+  }
+}
+
+function toggleAnkiDate(dateStr){
+  const idx = state.ankiDates.indexOf(dateStr);
+  if(idx === -1) state.ankiDates.push(dateStr);
+  else state.ankiDates.splice(idx,1);
+  render();
+  saveState();
+}
+
+function toggleToday(){
+  toggleAnkiDate(todayStr());
+}
+
+function calcStreak(){
+  let streak = 0;
+  let d = new Date();
+  const hasToday = state.ankiDates.includes(todayStr());
+  if(!hasToday) d.setDate(d.getDate()-1);
+  while(true){
+    const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    if(state.ankiDates.includes(ds)){
+      streak++;
+      d.setDate(d.getDate()-1);
+    } else break;
+  }
+  return streak;
+}
+
+function render(){
+  // aulas
+  const boxes = document.querySelectorAll('.lesson-box');
+  const doneCount = state.lessons.filter(Boolean).length;
+  boxes.forEach((b,i)=> b.classList.toggle('done', !!state.lessons[i]));
+  document.getElementById('lessonsCount').textContent = `${doneCount} / ${LESSON_TOTAL}`;
+  document.getElementById('lessonsBar').style.width = `${(doneCount/LESSON_TOTAL)*100}%`;
+
+  // frases
+  const phraseCapped = Math.min(state.phrases, PHRASE_GOAL);
+  document.getElementById('phrasesCount').textContent = `${state.phrases} / ${PHRASE_GOAL}`;
+  document.getElementById('phrasesBar').style.width = `${(phraseCapped/PHRASE_GOAL)*100}%`;
+  document.getElementById('phrasesTotalTxt').textContent = state.phrases;
+
+  // mar
+  const marCapped = Math.min(state.mar, MAR_GOAL);
+  const marDisplay = state.mar.toFixed(1).replace(/\.0$/,'');
+  document.getElementById('marTotal').textContent = marDisplay;
+  document.getElementById('marBar').style.width = `${(marCapped/MAR_GOAL)*100}%`;
+
+  // anki
+  const monthPrefix = `${viewYear}-${String(viewMonth+1).padStart(2,'0')}-`;
+  const monthCount = state.ankiDates.filter(d => d.startsWith(monthPrefix)).length;
+  document.getElementById('ankiTotal').textContent = monthCount;
+  document.getElementById('ankiStreak').textContent = calcStreak();
+  document.querySelectorAll('.anki-day').forEach(box=>{
+    box.classList.toggle('done', state.ankiDates.includes(box.dataset.date));
+  });
+  document.querySelectorAll('.heatmap-cell[data-date]').forEach(cell=>{
+    cell.classList.toggle('done', state.ankiDates.includes(cell.dataset.date));
+  });
+  const isTodayDone = state.ankiDates.includes(todayStr());
+  const todayBtn = document.getElementById('todayBtn');
+  todayBtn.textContent = isTodayDone ? '✓ Revisado hoje' : 'Marcar hoje';
+  todayBtn.classList.toggle('done', isTodayDone);
+
+  // geral (baseado apenas nos requisitos oficiais da etapa: aulas, frases, MAR)
+  const overallPct = Math.round(
+    ((doneCount/LESSON_TOTAL) + (phraseCapped/PHRASE_GOAL) + (marCapped/MAR_GOAL)) / 3 * 100
+  );
+  document.getElementById('overallPct').textContent = `${overallPct}%`;
+  document.getElementById('overallBar').style.width = `${overallPct}%`;
+}
+
+const THEME_KEY = 'cimv-etapa4-tracker-theme';
+
+function applyTheme(theme){
+  if(theme === 'dark'){
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeToggle').textContent = 'light';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    document.getElementById('themeToggle').textContent = 'dark';
+  }
+}
+
+async function toggleTheme(){
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  applyTheme(next);
+  try{
+    localStorage.setItem(THEME_KEY, next);
+  }catch(e){
+    console.error('Erro ao salvar tema', e);
+  }
+}
+
+async function loadTheme(){
+  try{
+    const val = localStorage.getItem(THEME_KEY);
+    if(val === 'dark'){
+      applyTheme('dark');
+    }
+  }catch(e){
+    // sem preferência salva, mantém modo claro
+  }
+}
+
+loadTheme();
+loadState();
+</script>
+</body>
+</html>
+
