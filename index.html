@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CIMV — Etapa 04 · Transição Monolíngue</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <style>
   :root{
     --cyan:#06b6d4;
@@ -764,11 +765,13 @@
     </div>
   </div>
 
-  <footer>Seu progresso é salvo automaticamente neste dispositivo.</footer>
+  <footer>Progresso compartilhado — visível e editável por quem acessar este link.</footer>
 </div>
 
 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Alternar modo escuro">dark</button>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
 const LESSON_TOTAL = 30;
 const PHRASE_GOAL = 500;
@@ -794,28 +797,75 @@ function showStatus(){
   showStatus._t = setTimeout(()=> el.classList.remove('show'), 1200);
 }
 
+/* ---- Armazenamento compartilhado via Firebase Realtime Database ----
+   Todos os visitantes leem e escrevem no MESMO registro. Preencha o
+   firebaseConfig abaixo com os dados do SEU projeto Firebase
+   (veja as instruções que acompanham este arquivo). */
+const firebaseConfig = {
+  apiKey: "AIzaSyC6HCFt3GVTgTGbCtocpkiUktY8EjZxTrE",
+  authDomain: "cimv---tracker.firebaseapp.com",
+  databaseURL: "https://cimv---tracker-default-rtdb.firebaseio.com",
+  projectId: "cimv---tracker",
+};
+
+let db = null;
+let dbRef = null;
+let isRemoteUpdate = false; // evita loop: salvar o que acabou de chegar do servidor
+
+function initFirebase(){
+  if(firebaseConfig.apiKey === "AIzaSyC6HCFt3GVTgTGbCtocpkiUktY8EjZxTrE"){
+    console.warn('Configure o firebaseConfig para ativar o armazenamento compartilhado.');
+    return false;
+  }
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+  dbRef = db.ref(KEY);
+  return true;
+}
+
 async function loadState(){
-  try{
-    const raw = localStorage.getItem(KEY);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      state = Object.assign(state, parsed);
+  buildLessonsGrid();
+  buildAnkiGrid();
+
+  const ok = initFirebase();
+  if(!ok){
+    render();
+    return;
+  }
+
+  // Escuta em tempo real: qualquer alteração de qualquer visitante
+  // atualiza a tela de todo mundo automaticamente.
+  dbRef.on('value', (snapshot) => {
+    const remote = snapshot.val();
+    if(remote){
+      isRemoteUpdate = true;
+      state = Object.assign({
+        lessons: Array(LESSON_TOTAL).fill(false),
+        phrases: 0,
+        mar: 0,
+        ankiDates: []
+      }, remote);
       if(!Array.isArray(state.lessons) || state.lessons.length !== LESSON_TOTAL){
         state.lessons = Array(LESSON_TOTAL).fill(false);
       }
       if(!Array.isArray(state.ankiDates)) state.ankiDates = [];
+      render();
+      isRemoteUpdate = false;
+    } else {
+      // banco ainda vazio: envia o estado inicial
+      saveState();
     }
-  }catch(e){
-    // sem dados salvos ainda
-  }
-  buildLessonsGrid();
-  buildAnkiGrid();
-  render();
+  }, (err) => {
+    console.error('Erro ao ler do Firebase', err);
+  });
 }
 
 async function saveState(){
+  if(isRemoteUpdate) return; // não reenvia dado que acabou de vir do servidor
   try{
-    localStorage.setItem(KEY, JSON.stringify(state));
+    if(dbRef){
+      await dbRef.set(state);
+    }
     showStatus();
   }catch(e){
     console.error('Erro ao salvar', e);
@@ -1118,4 +1168,3 @@ loadState();
 </script>
 </body>
 </html>
-
